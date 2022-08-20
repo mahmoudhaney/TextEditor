@@ -3,21 +3,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Stack;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
-class undoCmd {
-    int lineNumber;
-    String text;
-    int commandNumber;
-    int mLine;
-    int nLine;
-};
 
 class node {  
-    String data;  
-    node previous;  
-    node next;  
+    String data;
+    node previous;
+    node next;
+    
     public node(String data) 
     {  
         this.data = data;  
@@ -29,8 +22,7 @@ public class DoublyLinkedList {
     node head;
     node tail;
     int numOfLines = 0;
-    Stack<undoCmd> undoStack = new Stack<undoCmd>();
-    // =============== Methods ===============
+    // ===============   Methods    ===============
     Scanner in = new Scanner(System.in);
     
     public DoublyLinkedList(){
@@ -41,45 +33,64 @@ public class DoublyLinkedList {
         
         
         while (choice != 0) {
+            // ==== Start Menu Section =====
             System.out.println("<-<-<-<-<-<-<-<-<-< TEXT EDITOR >->->->->->->->->->");
             System.out.println("Please choose what you want to do:\n   1. Insert text into Line N");
-            System.out.println("   2. Delete line N\n   3. Replace text in Line N");
-            System.out.println("   4. Print all\n   5. How many characters in Line N.\n   6. Save into the file\n   7. Open a file");
-            System.out.print("Your Choice ==> "); choice = in.nextInt();
+            System.out.println("   2. Delete line N\n   3. Replace text in Line N\n   4. Print all");
+            System.out.println("   5. How many characters in Line N.\n   6. Save into the file\n   7. Open a file\n   8. Exit");
+            System.out.print("Your Choice ==> ");
+            choice = in.nextInt();
             System.out.println();
-            //-----------------------------------------------------------
-            if (choice == 1) //Insertion a new line.
+            // ==== End Menu Section =====
+            
+            // ******************* Insertion a new line *******************
+            if (choice == 1)
             {
                 int lineGiven;
-                String dataGiven;
-                System.out.print("Enter line you want the text to be placed into : ");
+                System.out.print("Enter the Line Number you want the text to be placed into : ");
                 lineGiven = in.nextInt();
-                System.out.print("Enter text : ");
-                in.nextLine(); // To clear input buffer.
-                dataGiven = in.nextLine();
-                dataGiven += "\n";
-                if (lineGiven == 1) {
-                    addToHead(dataGiven);
-                } 
-                else if (lineGiven > numOfLines) {
-                    insertFurtherAway(dataGiven, lineGiven);
-                } 
-                else if (lineGiven < numOfLines) {
-                    insertTextInBetween(dataGiven, lineGiven);
-                } 
-                else if (lineGiven == numOfLines) {
-                    int selection;
-                    System.out.println("Enter 1 to replace the last line, enter 2 to insert a new line");
-                    selection = in.nextInt();
-                    if (selection == 1) {
-                        replaceTextInLine(dataGiven, lineGiven);
-                    } else if (selection == 2) {
-                        addToTail(dataGiven);
+                // Invalid line number
+                if (lineGiven == 0) {
+                    System.out.println("\n!!!! There's no line 0, Did you mean 1 !!!!\n");
+                }
+                // Valid line number
+                else{
+                    String dataGiven;
+                    System.out.print("Enter text : ");
+                    in.nextLine(); // To clear input buffer.
+                    dataGiven = in.nextLine();
+                    dataGiven += "\n"; // Next String will be iserted in a new line.
+
+                    // Case 1: Insert First
+                    if (lineGiven == 1) {
+                        addToHead(dataGiven);
+                    }
+                    // Case 2: Insert Last
+                    else if (lineGiven > numOfLines) {
+                        insertFurtherAway(dataGiven, lineGiven);
+                        System.out.println("Done :)\n");
+                    }
+                    // Case 3: Insert Between Lines
+                    else if (lineGiven < numOfLines) {
+                        insertTextInBetween(dataGiven, lineGiven);
+                    }
+                    // Case 4: Insert Before Last
+                    else if (lineGiven == numOfLines) {
+                        int selection;
+                        System.out.println("Enter 1 to replace the last line, enter 2 to insert a new line");
+                        selection = in.nextInt();
+                        if (selection == 1) {
+                            replaceTextInLine(dataGiven, lineGiven);
+                        }
+                        else if (selection == 2) {
+                            addBeforeTail(dataGiven);
+                        }
                     }
                 }
             }
-            //-------------------------------------------------------
-            else if (choice == 2) //Deletion of a line, any line.
+            
+            // ******************* Deletion of a line *******************
+            else if (choice == 2)
             {
                 if(isEmpty())
                     System.out.println("The linked List is Already Empty\n");
@@ -90,20 +101,23 @@ public class DoublyLinkedList {
                     deleteLine(lineGiven);
                 }
             }
-            //-------------------------------------------------------
-            else if (choice == 3) // Replace text in Line N
+            
+            // ******************* Replace text in Line N *******************
+            else if (choice == 3)
             {
                 if(isEmpty())
-                    System.out.println("The linked List is Already Empty\n");
+                    System.out.println("You can't replace any line, The linked List is Empty\n");
                 else{
                     int lineGiven;
-                    String dataGiven;
-                    System.out.print("Enter line you want to change the content of : ");
+                    System.out.print("Enter line Number you want to change the content of : ");
                     lineGiven = in.nextInt();
-                    if (lineGiven > numOfLines) {
+                    
+                    // First I will check if the line number is valid or not ??
+                    if (lineGiven > numOfLines) { // Not Valid
                         System.out.println("The line you entered exceeds the existing number of lines\n");
                     } 
-                    else {
+                    else { // Valid
+                        String dataGiven;
                         System.out.print("Enter the new text : ");
                         in.nextLine(); // To clear input buffer.
                         dataGiven = in.nextLine();
@@ -112,32 +126,42 @@ public class DoublyLinkedList {
                     }
                 }
             }
-            //-------------------------------------------------------
-            else if (choice == 4)   //Printing the whole list, works fine
+            
+            // ******************* Printing the whole list *******************
+            else if (choice == 4)
             {
                 printall();
             }
-            //-------------------------------------------------------
-            else if (choice == 5)   //How many characters ?
+            
+            // ******************* How many characters ? *******************
+            else if (choice == 5)
             {
                 if(isEmpty())
-                    System.out.println("The linked List is Already Empty\n");
+                    System.out.println("You can't, The linked List Empty\n");
                 else{
                     int lineGiven;
-                    System.out.print("Enter the line you want to Count its characters : ");
+                    System.out.print("Enter the line Number you want to Count its characters : ");
                     lineGiven = in.nextInt();
                     numOfCharInLine(lineGiven);
                 }
             }
-            //-------------------------------------------------------
-            else if (choice == 6)   //Saving the list into a txt file
+            
+            // ******************* Saving the list into a txt file *******************
+            else if (choice == 6)
             {
                 saveAll();
             }
-            //-------------------------------------------------------
-            else if (choice == 7)   //Read a file in Linked list.
+            
+            // *******************   Read a file in Linked list.   *******************
+            else if (choice == 7)
             {
                 readFile();
+            }
+            
+            // *******************   End of Program.   *******************
+            else if (choice == 8)
+            {
+                break;
             }
 	}
     }
@@ -146,131 +170,41 @@ public class DoublyLinkedList {
         return head == null;
     }
     
-    public void addToHead(String dataGiven) { //this function will add to Head
-        if (isEmpty()){ //no node, empty linked list
-            node new_node = new node(dataGiven);
-            new_node.next = null;
-            head = new_node;
-            tail = head;
-            numOfLines++;
+    public void addToHead(String dataGiven) { // This function will add to Head
+        node new_node = new node(dataGiven);
+        if (isEmpty()){ // No node, empty linked list
+            new_node.next = new_node.previous = null;
+            head = tail = new_node;
         } 
-        else{ //one or more than one node
-            node new_node = new node(dataGiven);
-            new_node.next = null;
+        else{ // One or more than one node
+            new_node.previous = null;
             new_node.next = head;
+            head.previous = new_node;
             head = new_node;
-            numOfLines++;
         }
-        undoCmd adddedToHead = new undoCmd();
-        adddedToHead.lineNumber = 1;
-        adddedToHead.commandNumber = 1;
-        undoStack.push(adddedToHead);
+        numOfLines++;
+        System.out.println("Done :)\n");
     }
     
-    public void insertFurtherAway(String dataGiven, int lineGiven){  //will print /n lines if given line is larger than numOfLines
-	undoCmd insertedFurtherAway = new undoCmd();
-        insertedFurtherAway.lineNumber = 0;
-        insertedFurtherAway.commandNumber = 9;
-        if (head == null) {
-            while (numOfLines < lineGiven - 1) {
-                whateverAddToTail("\n");
-                insertedFurtherAway.lineNumber++;
-            }
-            // insertedFurtherAway.lineNumber++;
-            whateverAddToTail(dataGiven);
-        } 
-        else {
-            while (numOfLines < lineGiven - 1) {
-                whateverAddToTail("\n");
-                insertedFurtherAway.lineNumber++;
-            }
-            whateverAddToTail(dataGiven);
-        }
-        undoStack.push(insertedFurtherAway);
+    public void insertFurtherAway(String dataGiven, int lineGiven){  // Will print \n lines if given line is larger than numOfLines
+        while (numOfLines < lineGiven - 1)
+            addToTail("\n");
+        addToTail(dataGiven);
+        System.out.println("Done :)\n");
     }
     
-    public void whateverAddToTail(String dataGiven){	//an extra function used to add to tail, had to implement to make Undo function work, ignore this one please
-        if (head == null) //no node, empty linked list
-        {
-            node temp = new node(dataGiven);
-            temp.next = null;
-            head = temp;
-            tail = head;
-            numOfLines++;
-        } 
-        else //one or more than one node
-        {
-            node temp = new node(dataGiven);
-            temp.next = null;
-            tail.next = temp;
-            tail = temp;
-            numOfLines++;
+    public void insertTextInBetween(String dataGiven, int lineGiven){  // This function will insert text in the given line,
+                                                                       // And will re-arrange all the other lines' order
+        if (lineGiven == 0) { // Invalid line number "More Surness"
+            System.out.println("There's no line 0, Did you mean 1 !!!!\n");
         }
-    }
-    
-    public void insertTextInBetween(String dataGiven, int lineGiven){		//this function will insert text in the given line, and will push all the other lines
-        if (lineGiven == 0) {
-            System.out.println("There's no line 0, did you mean 1\n");
+        else if (lineGiven == 1) { // Will be the first line "More Surness"
+            addToHead(dataGiven);
+            System.out.println("Done :)\n");
         }
-        else if (lineGiven == 1) {
-            if (head == null) //no node, empty linked list
-            {
-                node temp = new node(dataGiven);
-                temp.next = null;
-                head = temp;
-                tail = head;
-                numOfLines++;
-            }
-            else //one or more than one node
-            {
-                node temp = new node(dataGiven);
-                temp.next = null;
-                temp.next = null;
-                temp.next = head;
-                head = temp;
-                numOfLines++;
-            }
-            //May be unnecessary, dunno
-            undoCmd insertedToHead = new undoCmd();
-            insertedToHead.lineNumber = 1;
-            insertedToHead.commandNumber = 5;
-            undoStack.push(insertedToHead);
-            // addToHead(dataGiven);
-            // numOfLines++;
-        }
-	else{
-            node  prevNode = head;
-            node  nextNode = head;
-            node  temp = new node(dataGiven);
-            temp.next = null;
-            int iterator = 2;
-            while (iterator < lineGiven) {
-                prevNode = prevNode.next;
-                nextNode = nextNode.next;
-                iterator++;
-            }
-            nextNode = nextNode.next;
-            prevNode.next = temp;
-            temp.next = nextNode;
-            numOfLines++;
-            undoCmd insertedInBetween = new undoCmd();
-            insertedInBetween.lineNumber = lineGiven;
-            insertedInBetween.commandNumber = 6;
-            undoStack.push(insertedInBetween);
-        }
-    }
-    
-    public void replaceTextInLine(String dataGiven,int lineGiven){		//this function will overwrite anything written in the given line
-	if(lineGiven == 0)
-            System.out.println("There's no line 0, did you mean 1\n");
-        else if (lineGiven == 1) {
-            this.head.data = head.data.replaceAll(head.data, dataGiven);
-        }
-        else if (lineGiven == numOfLines) {
-            this.tail.data = tail.data.replaceAll(tail.data, dataGiven);
-        }
-	else {
-            node current = this.head.next;
+        else { // Will insert the new node before the one has been chosen
+            node new_node = new node(dataGiven);
+            node current = head.next;
             int iterator = 2;
             while (current.next != null) {
                 if(iterator == lineGiven)
@@ -278,138 +212,240 @@ public class DoublyLinkedList {
                 current = current.next;
                 iterator++;
             }
-            current.data = current.data.replaceAll(current.data, dataGiven);
+            new_node.previous = current.previous; // Previous of new node will point at the previous node.
+            new_node.next = current;  // Next of new node will point at the current node.
+            current.previous.next = new_node; // Previous node will point at the new one.
+            current.previous = new_node; // Current node will point at the new one.
+            numOfLines++;
+            System.out.println("Done :)\n");
         }
     }
     
-    public void addToTail(String dataGiven){		//this function will add to Tail
-        if (head == null) //no node, empty linked list
-        {
-            node temp = new node(dataGiven);
-            temp.next = null;
-            head = temp;
-            tail = head;
-            numOfLines++;
+    public void replaceTextInLine(String dataGiven,int lineGiven){  // This function will overwrite anything written in the given line
+	if(lineGiven == 0)
+            System.out.println("There's no line 0, did you mean 1\n");
+        else {
+            // Case 1: Replace First
+            if (lineGiven == 1) {
+                this.head.data = head.data.replaceAll(head.data, dataGiven);
+            }
+            // Case 2: Replace Last
+            else if (lineGiven == numOfLines) {
+                this.tail.data = tail.data.replaceAll(tail.data, dataGiven);
+            }
+            // Case 3: Replace A Specific Line
+            else {
+                node current = this.head.next;
+                int iterator = 2;
+                while (current.next != null) {
+                    if(iterator == lineGiven)
+                        break;
+                    current = current.next;
+                    iterator++;
+                }
+                current.data = current.data.replaceAll(current.data, dataGiven);
+            }
+            System.out.println("Done :)\n");
         }
-        else //one or more than one node
-        {
-            node temp = new node(dataGiven);
-            temp.next = null;
-            tail.next = temp;
-            tail = temp;
-            numOfLines++;
-        }
-        undoCmd addedToTail = new undoCmd();
-        addedToTail.lineNumber = 1;
-        addedToTail.commandNumber = 8;
-        undoStack.push(addedToTail);
-	}
+    }
     
-    public void deleteLine(int lineGiven){							//this function should delete anything in the given line, also decreases the numOfLines
-        if (head == null) {
+    public void addToTail(String dataGiven){
+        node new_node = new node(dataGiven);
+        if (isEmpty()) // Empty linked list
+        {
+            new_node.next = new_node.previous = null;
+            head = tail = new_node;
+        }
+        else // One or more than one node in linked list
+        {
+            new_node.next = null;
+            new_node.previous = tail;
+            tail.next = new_node;
+            tail = new_node;
+        }
+        numOfLines++;
+    }
+    
+    public void addBeforeTail(String dataGiven){
+        node new_node = new node(dataGiven);
+        new_node.previous = tail.previous;
+        new_node.next = tail;
+        tail.previous.next = new_node;
+        tail.previous = new_node;
+        numOfLines++;
+        System.out.println("Done :)\n");
+    }
+    
+    public void deleteLine(int lineGiven){  // This function should delete anything in the given line,
+                                            // Also decreases the numOfLines by 1.
+        // ================   Empty   ================
+        if (isEmpty()) { 
             System.out.println("There is no line to be deleted/removed.\n");
         }
-	else if (head == tail) {
-            node temp = head;
-            head = null;
-            tail = null;
-            numOfLines--;
-        }	      
-	else if(lineGiven == 0){
-            System.out.println("There's no line 0, did you mean 1\n");	         
-	}
-        else if (lineGiven == 1) {
-            String backup = head.data;
-            node temp = head;
-            node nextNode = head.next;
-            head = nextNode;
-            numOfLines--;
-            undoCmd headRemoved = new undoCmd();
-            headRemoved.text = backup;
-            headRemoved.lineNumber = 1;
-            headRemoved.commandNumber = 12;
-            undoStack.push(headRemoved);
-        }
-        else if (lineGiven == numOfLines) {
-            node temp = head;
-            undoCmd deletedLine = new undoCmd();
-            deletedLine.commandNumber = 11;
-            while (temp.next != null && temp.next.next != null) {
-                temp = temp.next;
+        // ================ Not Empty ================
+        else{
+            // <<<<<<<<<<<<<<<< Invalid Line Number >>>>>>>>>>>>>>>>>>
+            if(lineGiven == 0){
+                System.out.println("!!!! There's no line 0, did you mean 1 !!!!\n");	         
             }
-            tail = temp;
-            String backup = temp.next.data;
-            temp.next = null;
-            numOfLines--;
-            deletedLine.text = backup;
-            deletedLine.lineNumber = lineGiven;
-            undoStack.push(deletedLine);
-
-        }
-	else if (lineGiven > numOfLines) {
-            System.out.println("Entered line is larger than existing lines...\n");
-        }
-	else if (lineGiven < numOfLines) {
-            undoCmd deletedLine = new undoCmd();
-            deletedLine.commandNumber = 10;
-            node prevNode = head;
-            node nextNode = head;
-            node temp = head;
-            int iterator = 2;
-            while (iterator < lineGiven) {
-                prevNode = prevNode.next;
-                nextNode = nextNode.next;
-                iterator++;
+            else if (lineGiven > numOfLines) {
+                System.out.println("!!!! Entered line is larger than existing lines !!!!\n");
             }
-            nextNode = nextNode.next;
-            temp = nextNode;
-            nextNode = nextNode.next;
-            prevNode.next = nextNode;
-            String backup = temp.data;
-            numOfLines--;
-            deletedLine.text = backup;
-            deletedLine.lineNumber = lineGiven;
-            undoStack.push(deletedLine);
+            // <<<<<<<<<<<<<<<<  Valid Line Number  >>>>>>>>>>>>>>>>>>
+            else{
+                // Case 1: Delete First
+                if (lineGiven == 1) {
+                    deleteHead();
+                }
+                // Case 2: Delete Last
+                else if (lineGiven == numOfLines) {
+                    deleteLast();
+                }
+                // Case 3: Delete Specific Node
+                else if (lineGiven < numOfLines) {
+                    deleteNode(lineGiven);
+                }
+                System.out.println("Done :)\n");
+            }
         }
     }
     
-    public void printall(){	//function used to print the whole linked list
-	node temp = head;
-        int linePrinted = 1;
+    public void deleteHead(){
+        if(isEmpty()){ // Empty
+            System.out.println("Liked List Is Already Empty");
+            return;
+        }
+        else if (numOfLines == 1) // Only one node exist
+        {
+            head = tail = null;
+        } 
+        else // Not Empty
+        {
+            head.next.previous = null;
+            head = head.next;
+        }
+        numOfLines--;
+    }
+    
+    public void deleteLast(){
+        if(isEmpty()){ // Empty
+            System.out.println("Liked List Is Already Empty");
+            return;
+        }
+        else if (numOfLines == 1) // Only one node exist
+        {
+            head = tail = null;
+        }
+        else // Not Empty
+        {
+            tail.previous.next = null;
+            tail = tail.previous;
+        }
+        numOfLines--;
+    }
+    
+    public void deleteNode(int lineGiven){
+        node current = head.next;
+        int iterator = 2;
+        while (current.next != null) {
+            if (iterator == lineGiven) {
+                break;
+            }
+            current = current.next;
+            iterator++;
+        }
+        current.previous.next = current.next; // Making the previous node poiting at the next one.
+        current.next.previous = current.previous; // Making the next node pointing at the previous one.
+        current.next = current.previous = null;
+        numOfLines--;
+    }
+    
+    public void printall(){  // Function to print the whole linked list
         if (isEmpty()) {
             System.out.println("!! There Are No Elements Yet !!\n");
         } 
         else {
-            while (temp != null) {
+            node cur = head;
+            int linePrinted = 1;
+            while (cur != null) {
                 if (linePrinted == 1) {
                     System.out.println("------------------- Content -------------------");
                 } 
-                System.out.print(linePrinted + ") " + temp.data);
-                temp = temp.next;
+                System.out.print(linePrinted + ") " + cur.data);
+                cur = cur.next;
                 linePrinted++;
             }
-            System.out.println("------------------- Content -------------------\n");
+            System.out.println("## Number of Lines: " + numOfLines + " ##\n------------------- Content -------------------\n");
+        }
+    }
+    
+    public void numOfCharInLine(int lineGiven){	// Counting Line's Characters.
+        // ================ Invalid Line Number ================
+        if(lineGiven == 0)
+            System.out.println("There's no line 0, did you mean 1\n");
+        else if (lineGiven > numOfLines)
+            System.out.println("Entered line is larger than existing lines...\n");
+        
+        // ================  valid Line Number  ================
+        else{
+            // Case 1: Count First Line
+            if (lineGiven == 1) {
+                int count = 0;
+                for(int i = 0; i < head.data.length(); ++i){
+                    if(head.data.charAt(i) == ' ')
+                        continue;
+                    count++;
+                }
+                System.out.println("Number of characters: " + --count + "\n");
+            }
+            // Case 2: Count Last Line
+            else if (lineGiven == numOfLines) {
+                int count = 0;
+                for(int i = 0; i < tail.data.length(); ++i){
+                    if(tail.data.charAt(i) == ' ')
+                        continue;
+                    count++;
+                }
+                System.out.println("Number of characters: " + --count + "\n");
+            }
+            // Case 3: Count A Specific Line
+            else {
+                // 1. Specifying the line to count
+                node current = head.next;
+                int iterator = 2;
+                while (current.next != null) {
+                    if(iterator == lineGiven)
+                        break;
+                    current = current.next;
+                    iterator++;
+                }
+                // 2. Then count it.
+                int count = 0;
+                for(int i = 0; i < current.data.length(); ++i){
+                    if(current.data.charAt(i) == ' ')
+                        continue;
+                    count++;
+                }
+                System.out.println("Number of characters: " + --count + "\n");
+            }
         }
     }
 
     public void saveAll(){
-        node temp = head;
-        int linePrinted = 1;
-        int pagePrinted = 2;
-        String fileName;
-        fileName = "src\\texteditor\\test.txt";
+        String filePath = "src\\texteditor\\test.txt";
         try{
-            // Clearing file before inserting the data into it.
-            File file = new File(fileName);
+            // 1. Clearing file before inserting the data into it.
+            File file = new File(filePath);
             PrintWriter writer = new PrintWriter(file);
             writer.print("");
             writer.close();
-            // Inserting the data into it.
-            FileWriter file1 = new FileWriter(fileName, true);
+            
+            // 2. Inserting the data into it.
+            node temp = head;
+            FileWriter file1 = new FileWriter(filePath, true);
             while (temp != null) {
                 file1.write(temp.data);
                 temp = temp.next;
-                linePrinted++;
             }
             file1.close();
             JOptionPane.showMessageDialog(null, "Saved Successfully");
@@ -419,64 +455,8 @@ public class DoublyLinkedList {
         } 
     }
     
-    public void numOfCharInLine(int lineGiven){	//count num of characters
-        if(lineGiven == 0)
-            System.out.println("There's no line 0, did you mean 1\n");
-        else if (lineGiven > numOfLines)
-            System.out.println("Entered line is larger than existing lines...\n");
-        else if (lineGiven == 1) {
-            int count = 0;
-            for(int i = 0; i < head.data.length(); ++i){
-                if(head.data.charAt(i) == ' ')
-                    continue;
-                count++;
-            }
-            System.out.println("Number of characters: " + --count + "\n");
-        }
-        else if (lineGiven == numOfLines) {
-            int count = 0;
-            for(int i = 0; i < tail.data.length(); ++i){
-                if(tail.data.charAt(i) == ' ')
-                    continue;
-                count++;
-            }
-            System.out.println("Number of characters: " + --count + "\n");
-        }
-	else {
-            int count = 0;
-            node current = head.next;
-            int iterator = 2;
-            while (current.next != null) {
-                if(iterator == lineGiven)
-                    break;
-                current = current.next;
-                iterator++;
-            }
-            for(int i = 0; i < current.data.length(); ++i){
-                if(current.data.charAt(i) == ' ')
-                    continue;
-                count++;
-            }
-            System.out.println("Number of characters: " + --count + "\n");
-        }
-    }
-    
-    public void insertBack(String value){ // To push into the linked list.
-        node new_node = new node(value);
-        if(isEmpty()){
-            head = tail = new_node;
-            new_node.next = new_node.previous = null;
-        }
-        else{
-            new_node.next = null;
-            new_node.previous = tail;
-            tail.next = new_node;
-            tail = new_node;
-        }
-    }
-    
     public void readFile(){
-        // Get The data from the file
+        // 1. Get The data from the file
         ArrayList<String> data = new ArrayList<String>();
         String[] info = null;
         File file = new File("src\\texteditor\\test.txt");
@@ -490,11 +470,11 @@ public class DoublyLinkedList {
         catch(Exception e){
             JOptionPane.showMessageDialog(null, e);
         }
+        
         // Pushing the data into the linked list.
         for(int i = 0; i<info.length; ++i){
             info[i] += "\n";
-            insertBack(info[i]);
-            numOfLines++;
+            addToTail(info[i]);
         }
         JOptionPane.showMessageDialog(null, "File Read Successfully");
     }
