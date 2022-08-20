@@ -21,39 +21,48 @@ public class DoublyLinkedList {
     // =============== Data Members ===============
     node head;
     node tail;
-    int numOfLines = 0;
+    int numOfLines;
     // ===============   Methods    ===============
     Scanner in = new Scanner(System.in);
     
     public DoublyLinkedList(){
+        // ----- Data Members' Intialization -----
         head = null;
         tail = null;
+        numOfLines = 0;
+        
+        // ----- Menu Section -----
         int choice = -1;
-        int prevPagePrinted = 1;
-        
-        
-        while (choice != 0) {
-            // ==== Start Menu Section =====
-            System.out.println("<-<-<-<-<-<-<-<-<-< TEXT EDITOR >->->->->->->->->->");
-            System.out.println("Please choose what you want to do:\n   1. Insert text into Line N");
-            System.out.println("   2. Delete line N\n   3. Replace text in Line N\n   4. Print all");
-            System.out.println("   5. How many characters in Line N.\n   6. Save into the file\n   7. Open a file\n   8. Exit");
-            System.out.print("Your Choice ==> ");
+        while (choice != 8) {
+            menu();
             choice = in.nextInt();
             System.out.println();
-            // ==== End Menu Section =====
-            
+            handleChoice(choice);
+	}
+    }
+    
+    // ===============   Front-End Methods   ===============
+    public void menu(){
+        int choice = -1;
+        System.out.println("<-<-<-<-<-<-<-<-<-< TEXT EDITOR >->->->->->->->->->");
+        System.out.println("Please choose what you want to do:\n   1. Insert text into Line N");
+        System.out.println("   2. Delete line N\n   3. Replace text in Line N\n   4. Print all");
+        System.out.println("   5. How many characters in Line N.\n   6. Save into the file\n   7. Open a file\n   8. Exit");
+        System.out.print("Your Choice ==> ");
+    }
+    
+    public void handleChoice(int choice){
+        switch (choice) {
             // ******************* Insertion a new line *******************
-            if (choice == 1)
-            {
+            case 1: {
                 int lineGiven;
                 System.out.print("Enter the Line Number you want the text to be placed into : ");
                 lineGiven = in.nextInt();
-                // Invalid line number
+                // 1. Invalid line number
                 if (lineGiven == 0) {
                     System.out.println("\n!!!! There's no line 0, Did you mean 1 !!!!\n");
                 }
-                // Valid line number
+                // 2. Valid line number
                 else{
                     String dataGiven;
                     System.out.print("Enter text : ");
@@ -86,12 +95,10 @@ public class DoublyLinkedList {
                             addBeforeTail(dataGiven);
                         }
                     }
-                }
-            }
-            
+                }}
+                break;
             // ******************* Deletion of a line *******************
-            else if (choice == 2)
-            {
+            case 2:
                 if(isEmpty())
                     System.out.println("The linked List is Already Empty\n");
                 else{
@@ -100,11 +107,9 @@ public class DoublyLinkedList {
                     lineGiven = in.nextInt();
                     deleteLine(lineGiven);
                 }
-            }
-            
+                break;
             // ******************* Replace text in Line N *******************
-            else if (choice == 3)
-            {
+            case 3:
                 if(isEmpty())
                     System.out.println("You can't replace any line, The linked List is Empty\n");
                 else{
@@ -125,17 +130,13 @@ public class DoublyLinkedList {
                         replaceTextInLine(dataGiven, lineGiven);
                     }
                 }
-            }
-            
+                break;
             // ******************* Printing the whole list *******************
-            else if (choice == 4)
-            {
+            case 4:
                 printall();
-            }
-            
-            // ******************* How many characters ? *******************
-            else if (choice == 5)
-            {
+                break;
+            // *******************  How many characters ?  *******************
+            case 5:
                 if(isEmpty())
                     System.out.println("You can't, The linked List Empty\n");
                 else{
@@ -144,28 +145,42 @@ public class DoublyLinkedList {
                     lineGiven = in.nextInt();
                     numOfCharInLine(lineGiven);
                 }
-            }
-            
-            // ******************* Saving the list into a txt file *******************
-            else if (choice == 6)
-            {
-                saveAll();
-            }
-            
-            // *******************   Read a file in Linked list.   *******************
-            else if (choice == 7)
-            {
-                readFile();
-            }
-            
-            // *******************   End of Program.   *******************
-            else if (choice == 8)
-            {
                 break;
-            }
-	}
+            // ******************* Saving the list into a txt file *******************
+            case 6:
+                saveAll();
+                break;
+            // *******************   Read a file in Linked list.   *******************
+            case 7:
+                readFile();
+                break;
+            case 8:
+                break;
+            default:
+                System.out.println("!!!! Invalid Choice !!!!\n");
+        }
     }
     
+    public void printall(){  // Function to print the whole linked list
+        if (isEmpty()) {
+            System.out.println("!! There Are No Elements Yet !!\n");
+        } 
+        else {
+            node cur = head;
+            int linePrinted = 1;
+            while (cur != null) {
+                if (linePrinted == 1) {
+                    System.out.println("------------------- Content -------------------");
+                } 
+                System.out.print(linePrinted + ") " + cur.data);
+                cur = cur.next;
+                linePrinted++;
+            }
+            System.out.println("## Number of Lines: " + numOfLines + " ##\n------------------- Content -------------------\n");
+        }
+    }
+    
+    // ===============   Back-End Methods    ===============
     public boolean isEmpty() {
         return head == null;
     }
@@ -360,25 +375,6 @@ public class DoublyLinkedList {
         numOfLines--;
     }
     
-    public void printall(){  // Function to print the whole linked list
-        if (isEmpty()) {
-            System.out.println("!! There Are No Elements Yet !!\n");
-        } 
-        else {
-            node cur = head;
-            int linePrinted = 1;
-            while (cur != null) {
-                if (linePrinted == 1) {
-                    System.out.println("------------------- Content -------------------");
-                } 
-                System.out.print(linePrinted + ") " + cur.data);
-                cur = cur.next;
-                linePrinted++;
-            }
-            System.out.println("## Number of Lines: " + numOfLines + " ##\n------------------- Content -------------------\n");
-        }
-    }
-    
     public void numOfCharInLine(int lineGiven){	// Counting Line's Characters.
         // ================ Invalid Line Number ================
         if(lineGiven == 0)
@@ -431,6 +427,7 @@ public class DoublyLinkedList {
         }
     }
 
+    // ===============   Files Methods    ===============
     public void saveAll(){
         String filePath = "src\\texteditor\\test.txt";
         try{
@@ -471,7 +468,7 @@ public class DoublyLinkedList {
             JOptionPane.showMessageDialog(null, e);
         }
         
-        // Pushing the data into the linked list.
+        // 2. Pushing the data into the linked list.
         for(int i = 0; i<info.length; ++i){
             info[i] += "\n";
             addToTail(info[i]);
