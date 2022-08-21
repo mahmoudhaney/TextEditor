@@ -43,7 +43,6 @@ public class DoublyLinkedList {
     
     // ===============   Front-End Methods   ===============
     public void menu(){
-        int choice = -1;
         System.out.println("<-<-<-<-<-<-<-<-<-< TEXT EDITOR >->->->->->->->->->");
         System.out.println("Please choose what you want to do:\n   1. Insert text into Line N");
         System.out.println("   2. Delete line N\n   3. Replace text in Line N\n   4. Print all");
@@ -429,27 +428,31 @@ public class DoublyLinkedList {
 
     // ===============   Files Methods    ===============
     public void saveAll(){
-        String filePath = "src\\texteditor\\test.txt";
-        try{
-            // 1. Clearing file before inserting the data into it.
-            File file = new File(filePath);
-            PrintWriter writer = new PrintWriter(file);
-            writer.print("");
-            writer.close();
-            
-            // 2. Inserting the data into it.
-            node temp = head;
-            FileWriter file1 = new FileWriter(filePath, true);
-            while (temp != null) {
-                file1.write(temp.data);
-                temp = temp.next;
+        if(isEmpty())
+            System.out.println("!! Nothing to save, Linked list is empty !!");
+        else{
+            String filePath = "src\\texteditor\\test.txt";
+            try{
+                // 1. Clearing file before inserting the data into it.
+                File file = new File(filePath);
+                PrintWriter writer = new PrintWriter(file);
+                writer.print("");
+                writer.close();
+
+                // 2. Inserting the data into it.
+                node temp = head;
+                FileWriter file1 = new FileWriter(filePath, true);
+                while (temp != null) {
+                    file1.write(temp.data);
+                    temp = temp.next;
+                }
+                file1.close();
+                JOptionPane.showMessageDialog(null, "Saved Successfully");
             }
-            file1.close();
-            JOptionPane.showMessageDialog(null, "Saved Successfully");
+            catch(Exception e){
+                JOptionPane.showMessageDialog(null, e);
+            } 
         }
-        catch(Exception e){
-            JOptionPane.showMessageDialog(null, e);
-        } 
     }
     
     public void readFile(){
@@ -473,7 +476,10 @@ public class DoublyLinkedList {
             info[i] += "\n";
             addToTail(info[i]);
         }
-        JOptionPane.showMessageDialog(null, "File Read Successfully");
+        if(isEmpty())
+            System.out.println("!! File has no data to read !!");
+        else
+            JOptionPane.showMessageDialog(null, "File Read Successfully");
     }
     
 }
